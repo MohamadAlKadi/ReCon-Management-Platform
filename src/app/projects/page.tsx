@@ -1,27 +1,58 @@
-import prisma from '@/lib/prisma';
-import Link from 'next/link';
+import ProjectCard from '@/components/ProjectCard'
+import prisma from '@/lib/prisma'
+import Link from 'next/link'
+
+const getProjectStatus = (startDate: Date, endDate: Date | null) => {
+  const now = new Date()
+
+  if (endDate && endDate < now) {
+    return 'COMPLETED'
+  }
+
+  if (startDate > now) {
+    return 'UPCOMING'
+  }
+
+  return 'ACTIVE'
+}
 
 export default async function Projects() {
   const projects = await prisma.project.findMany({
-    include: { company: true },
+    include: {
+      company: true,
+      tasks: {
+        select: {
+          status: true,
+        },
+      },
+    },
     orderBy: { createdAt: 'desc' },
-  });
+  })
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Projects</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {projects.map((project) => (
-          <Link
-            key={project.id}
-            href={`/projects/${project.id}`}
-            className="bg-white p-4 rounded shadow hover:bg-gray-50 block"
-          >
-            <h2 className="font-semibold">{project.name}</h2>
-            <p className="text-sm text-gray-600">{project.company.name}</p>
-          </Link>
-        ))}
+      <h1 className="mb-4 text-2xl font-bold">Projects</h1>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        {projects.map((project) => {
+          const completedCount = project.tasks.filter(
+            (task) => task.status === 'COMPLETED',
+          ).length
+          const totalCount = project.tasks.length
+          const progress = totalCount ? (completedCount / totalCount) * 100 : undefined
+
+          return (
+            <Link key={project.id} href={`/projects/${project.id}`} className="block">
+              <ProjectCard
+                name={project.name}
+                companyName={project.company.name}
+                status={getProjectStatus(project.startDate, project.endDate)}
+                taskSummary={`${completedCount}/${totalCount || 0} completed`}
+                progress={progress}
+              />
+            </Link>
+          )
+        })}
       </div>
     </div>
-  );
+  )
 }
