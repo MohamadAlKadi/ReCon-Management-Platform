@@ -1,9 +1,120 @@
-/* Tailwind 4 import (correct for this setup) */
 @import "tailwindcss";
 
-/* Global styles */
+/* Theme + global primitives */
+:root {
+  --color-primary-50: #eff6ff;
+  --color-primary-500: #2563eb;
+  --color-primary-600: #1d4ed8;
+  --color-neutral-50: #f8fafc;
+  --color-neutral-100: #f1f5f9;
+  --color-neutral-300: #cbd5e1;
+  --color-neutral-600: #475569;
+  --color-neutral-900: #0f172a;
+  --color-success-100: #dcfce7;
+  --color-success-700: #15803d;
+  --color-warning-100: #fef3c7;
+  --color-warning-700: #b45309;
+}
+
+html {
+  font-size: 16px;
+}
+
 body {
-  background-color: #f3f4f6; /* light gray background globally */
-  color: #111827;           /* dark text */
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-neutral-100);
+  color: var(--color-neutral-900);
+  font-family: Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: var(--color-neutral-900);
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: clamp(1.75rem, 1.2rem + 1.6vw, 2.5rem);
+  line-height: 1.1;
+}
+
+h2 {
+  font-size: clamp(1.35rem, 1.15rem + 0.9vw, 1.75rem);
+  line-height: 1.2;
+}
+
+h3 {
+  font-size: clamp(1.1rem, 1rem + 0.5vw, 1.25rem);
+}
+
+.page-shell {
+  width: min(1120px, calc(100% - 2rem));
+  margin-inline: auto;
+  padding-block: 1.5rem 2.5rem;
+}
+
+.page-stack {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.surface-card {
+  background: white;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: 0.9rem;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+}
+
+.pill-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.pill-badge--primary {
+  background: var(--color-primary-50);
+  color: var(--color-primary-600);
+}
+
+.pill-badge--success {
+  background: var(--color-success-100);
+  color: var(--color-success-700);
+}
+
+.pill-badge--warning {
+  background: var(--color-warning-100);
+  color: var(--color-warning-700);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.section-kicker {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--color-neutral-600);
+}
+
+.subtle-gradient {
+  background-image: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(248, 250, 252, 0.9));
+}
+
+.flow-tight > * + * {
+  margin-top: 0.4rem;
+}
+
+.flow-base > * + * {
+  margin-top: 0.75rem;
 }
