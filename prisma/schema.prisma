@@ -1,0 +1,112 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // required in Prisma 4
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id         Int                 @id @default(autoincrement())
+  name       String
+  email      String              @unique
+  password   String
+  role       Role
+  company    Company?            @relation(fields: [companyId], references: [id])
+  companyId  Int?
+  projects   ProjectAssignment[]
+  attendance Attendance[]
+
+  // Relations to Task and Asset
+  tasks  Task[]  @relation("TaskAssignedTo")
+  assets Asset[] @relation("AssetAssignedTo")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Company {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  users     User[]
+  projects  Project[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Project {
+  id          Int                 @id @default(autoincrement())
+  name        String
+  description String?
+  company     Company             @relation(fields: [companyId], references: [id])
+  companyId   Int
+  tasks       Task[]
+  assets      Asset[]             @relation("ProjectAssets")
+  assignments ProjectAssignment[]
+  startDate   DateTime
+  endDate     DateTime?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+}
+
+model Task {
+  id           Int        @id @default(autoincrement())
+  title        String
+  description  String?
+  project      Project    @relation(fields: [projectId], references: [id])
+  projectId    Int
+  assignedTo   User?      @relation("TaskAssignedTo", fields: [assignedToId], references: [id])
+  assignedToId Int?
+  status       TaskStatus @default(PENDING)
+  dueDate      DateTime?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model ProjectAssignment {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  project   Project  @relation(fields: [projectId], references: [id])
+  projectId Int
+  role      String
+  createdAt DateTime @default(now())
+}
+
+model Attendance {
+  id        Int              @id @default(autoincrement())
+  user      User             @relation(fields: [userId], references: [id])
+  userId    Int
+  date      DateTime
+  status    AttendanceStatus
+  createdAt DateTime         @default(now())
+}
+
+model Asset {
+  id           Int      @id @default(autoincrement())
+  name         String
+  type         String
+  assignedTo   User?    @relation("AssetAssignedTo", fields: [assignedToId], references: [id])
+  assignedToId Int?
+  project      Project  @relation("ProjectAssets", fields: [projectId], references: [id])
+  projectId    Int
+}
+
+enum Role {
+  WORKER
+  MANAGER
+  ADMIN
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LEAVE
+}
