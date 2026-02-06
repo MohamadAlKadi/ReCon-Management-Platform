@@ -1,51 +1,23 @@
-// src/app/tasks/page.tsx
-import  prisma  from '@/lib/prisma'
-import { Task } from '@prisma/client'
-import React from 'react'
+import { mockProjects, mockTasks } from '@/lib/mock-data';
 
-// Optional: define a type for props if you fetch tasks in a separate component
-type TaskListProps = {
-  tasks: Task[]
-}
-
-// Component to render a list of tasks
-function TaskList({ tasks }: TaskListProps) {
-  return (
-    <div className="p-4 space-y-4">
-      {tasks.map((task: Task) => (
-        <div
-          key={task.id}
-          className="p-4 border rounded shadow hover:bg-gray-50 transition"
-        >
-          <h3 className="font-semibold">{task.title}</h3>
-          {task.description && <p>{task.description}</p>}
-          <p className="text-sm text-gray-500">
-            Assigned to: {task.assignedToId ?? 'Unassigned'}
-          </p>
-          <p className="text-sm text-gray-500">
-            Status: {task.status ?? 'Pending'}
-          </p>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-// Server component that fetches tasks from the database
 export default async function TasksPage() {
-  // Fetch tasks from Prisma
-  const tasks: Task[] = await prisma.task.findMany({
-    orderBy: { createdAt: 'desc' },
-    include: {
-      // Include assigned user info if you want
-      assignedTo: true,
-    },
-  })
-
   return (
-    <main className="min-h-screen bg-gray-100">
-      <h1 className="text-2xl font-bold p-4">Tasks</h1>
-      <TaskList tasks={tasks} />
-    </main>
-  )
+    <div>
+      <h1 className="mb-1 text-3xl font-bold text-slate-900">Task Board</h1>
+      <p className="mb-5 text-slate-600">Prioritize work, assign responsibility, and track execution status.</p>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        {mockTasks.map((task) => (
+          <article key={task.id} className="rounded-2xl border border-white/60 bg-white p-5 shadow-sm">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">{mockProjects.find((p) => p.id === task.projectId)?.name}</p>
+            <h2 className="mt-2 text-lg font-semibold text-slate-900">{task.title}</h2>
+            <p className="mt-1 text-sm text-slate-600">{task.description}</p>
+            <div className="mt-4 flex items-center justify-between text-sm">
+              <span className="rounded-full bg-indigo-100 px-3 py-1 font-medium text-indigo-700">{task.status.replace('_', ' ')}</span>
+              <span className="text-slate-500">{task.assignedTo}</span>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  );
 }

@@ -1,24 +1,23 @@
-import prisma from '@/lib/prisma';
 import Link from 'next/link';
+import { mockProjects, mockTasks } from '@/lib/mock-data';
+import { getAppRole, withRole } from '@/lib/ui-role';
 
-export default async function Projects() {
-  const projects = await prisma.project.findMany({
-    include: { company: true },
-    orderBy: { createdAt: 'desc' },
-  });
+type ProjectsPageProps = { searchParams: Promise<{ role?: string }> };
+
+export default async function Projects({ searchParams }: ProjectsPageProps) {
+  const { role: roleParam } = await searchParams;
+  const role = getAppRole(roleParam);
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Projects</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {projects.map((project) => (
-          <Link
-            key={project.id}
-            href={`/projects/${project.id}`}
-            className="bg-white p-4 rounded shadow hover:bg-gray-50 block"
-          >
-            <h2 className="font-semibold">{project.name}</h2>
-            <p className="text-sm text-gray-600">{project.company.name}</p>
+      <h1 className="mb-1 text-3xl font-bold text-slate-900">Project Portfolio</h1>
+      <p className="mb-5 text-slate-600">Manager workspace for project configuration, monitoring, and execution details.</p>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        {mockProjects.map((project) => (
+          <Link key={project.id} href={withRole(`/projects/${project.id}`, role)} className="block rounded-2xl border border-white/60 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+            <h2 className="text-lg font-semibold text-slate-900">{project.name}</h2>
+            <p className="mt-1 text-sm text-slate-500">{project.company}</p>
+            <p className="mt-4 text-sm text-slate-600">{mockTasks.filter((task) => task.projectId === project.id).length} tracked tasks</p>
           </Link>
         ))}
       </div>
