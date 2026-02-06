@@ -1,10 +1,15 @@
 @import "tailwindcss";
 
 :root {
-  color-scheme: light;
+  --bg: #f5f7fb;
+  --card: #ffffff;
+  --ink: #0f172a;
+  --muted: #64748b;
+  --brand: #2563eb;
 }
 
 body {
-  color: #0f172a;
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  background: radial-gradient(circle at top right, #e0e7ff 0%, var(--bg) 32%);
+  color: var(--ink);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
 }
