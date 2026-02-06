@@ -1,11 +1,41 @@
+import Link from 'next/link';
 import prisma from '@/lib/prisma';
 
-export default async function Dashboard() {
-  const [companyCount, projectCount, taskCount, assetCount] = await Promise.all([
-    prisma.company.count(),
-    prisma.project.count(),
-    prisma.task.count(),
-    prisma.asset.count(),
+type DashboardRole = 'MANAGER' | 'WORKER';
+
+type DashboardProps = {
+  searchParams?: Promise<{
+    role?: string;
+  }>;
+};
+
+const ROLE_TITLES: Record<DashboardRole, string> = {
+  MANAGER: 'Manager dashboard',
+  WORKER: 'Worker dashboard',
+};
+
+function getRole(roleParam?: string): DashboardRole {
+  return roleParam?.toUpperCase() === 'WORKER' ? 'WORKER' : 'MANAGER';
+}
+
+function Icon({ symbol }: { symbol: string }) {
+  return (
+    <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-lg" aria-hidden="true">
+      {symbol}
+    </span>
+  );
+}
+
+export default async function Dashboard({ searchParams }: DashboardProps) {
+  const params = (await searchParams) ?? {};
+  const activeRole = getRole(params.role);
+
+  const [companyCount, projectCount, taskCount, assetCount, inProgressTasks] = await Promise.all([
+    prisma.company.count().catch(() => 0),
+    prisma.project.count().catch(() => 0),
+    prisma.task.count().catch(() => 0),
+    prisma.asset.count().catch(() => 0),
+    prisma.task.count({ where: { status: 'IN_PROGRESS' } }).catch(() => 0),
   ]);
 
   const stats = [

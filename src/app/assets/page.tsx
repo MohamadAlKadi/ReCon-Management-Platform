@@ -1,4 +1,5 @@
-import prisma from '@/lib/prisma';
+import AssetCard from '@/components/AssetCard'
+import prisma from '@/lib/prisma'
 
 export default async function AssetsPage() {
   const assets = await prisma.asset.findMany({
@@ -6,7 +7,7 @@ export default async function AssetsPage() {
       assignedTo: { select: { name: true } },
       project: { select: { name: true } },
     },
-  });
+  })
 
   return (
     <section className="page-stack">

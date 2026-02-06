@@ -1,5 +1,6 @@
+import { Suspense } from 'react';
 import './globals.css';
-import Navbar from '@/components/Navbar';
+import RoleAwareNavbar from '@/components/RoleAwareNavbar';
 
 export const metadata = {
   title: 'ReCon - Manpower Management',

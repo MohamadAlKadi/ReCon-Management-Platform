@@ -1,11 +1,33 @@
-import prisma from '@/lib/prisma';
-import Link from 'next/link';
+import ProjectCard from '@/components/ProjectCard'
+import prisma from '@/lib/prisma'
+import Link from 'next/link'
+
+const getProjectStatus = (startDate: Date, endDate: Date | null) => {
+  const now = new Date()
+
+  if (endDate && endDate < now) {
+    return 'COMPLETED'
+  }
+
+  if (startDate > now) {
+    return 'UPCOMING'
+  }
+
+  return 'ACTIVE'
+}
 
 export default async function Projects() {
   const projects = await prisma.project.findMany({
-    include: { company: true },
+    include: {
+      company: true,
+      tasks: {
+        select: {
+          status: true,
+        },
+      },
+    },
     orderBy: { createdAt: 'desc' },
-  });
+  })
 
   return (
     <section className="page-stack">

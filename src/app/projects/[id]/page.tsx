@@ -1,17 +1,25 @@
-import prisma from '@/lib/prisma';
-import { notFound } from 'next/navigation';
+import AssetCard from '@/components/AssetCard'
+import TaskCard from '@/components/TaskCard'
+import prisma from '@/lib/prisma'
+import { notFound } from 'next/navigation'
 
 type ProjectDetailPageProps = {
   params: {
-    id: string;
-  };
-};
+    id: string
+  }
+}
+
+const taskProgressByStatus: Record<string, number> = {
+  PENDING: 25,
+  IN_PROGRESS: 60,
+  COMPLETED: 100,
+}
 
 export default async function ProjectDetailPage({ params }: ProjectDetailPageProps) {
-  const projectId = Number(params.id);
+  const projectId = Number(params.id)
 
   if (!Number.isInteger(projectId) || projectId <= 0) {
-    notFound();
+    notFound()
   }
 
   const project = await prisma.project.findUnique({
@@ -35,10 +43,10 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
         },
       },
     },
-  });
+  })
 
   if (!project) {
-    notFound();
+    notFound()
   }
 
   return (
