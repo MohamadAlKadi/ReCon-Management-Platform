@@ -1,74 +1,64 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
-const navByRole = {
+type Role = 'manager' | 'worker';
+
+type NavItem = {
+  label: string;
+  href: string;
+};
+
+const navItemsByRole: Record<Role, NavItem[]> = {
   manager: [
-    { label: 'Overview', href: '/manager' },
-    { label: 'Dashboard', href: '/dashboard' },
+    { label: 'Overview', href: '/dashboard' },
     { label: 'Projects', href: '/projects' },
-    { label: 'Tasks', href: '/tasks' },
+    { label: 'Team Tasks', href: '/tasks' },
+    { label: 'Worker Docs', href: '/documents' },
+    { label: 'Payroll', href: '/payroll' },
     { label: 'Assets', href: '/assets' },
   ],
   worker: [
-    { label: 'Overview', href: '/worker' },
-    { label: 'My Tasks', href: '/worker/tasks' },
-    { label: 'Documents', href: '/worker/documents' },
-    { label: 'Timeline', href: '/worker/timeline' },
+    { label: 'My Dashboard', href: '/dashboard' },
+    { label: 'My Tasks', href: '/tasks' },
+    { label: 'My Documents', href: '/documents' },
+    { label: 'Project Timeline', href: '/projects' },
+    { label: 'Assigned Assets', href: '/assets' },
   ],
-} as const;
+};
 
-export default function Navbar() {
+export default function Navbar({ role }: { role: Role }) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const role = searchParams.get('role') === 'worker' ? 'worker' : 'manager';
-  const links = navByRole[role];
+  const navItems = navItemsByRole[role];
+  const roleLabel = role === 'manager' ? 'Manager View' : 'Worker View';
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-slate-200/60 bg-white/90 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3">
-        <Link href="/" className="text-xl font-semibold tracking-tight text-slate-900">
-          ReCon Platform
-        </Link>
+    <nav className="bg-white shadow p-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <div className="flex items-center gap-3">
+        <div className="font-bold text-xl">ReCon</div>
+        <span className="rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-blue-700">
+          {roleLabel}
+        </span>
+      </div>
+      <div className="flex flex-wrap gap-1.5 md:justify-end">
+        {navItems.map((item) => {
+          const isActive = pathname === item.href;
 
-        <div className="inline-flex rounded-lg bg-slate-100 p-1 text-sm">
-          <Link
-            href="?role=manager"
-            className={`rounded-md px-3 py-1.5 font-medium transition ${
-              role === 'manager' ? 'bg-white text-slate-900 shadow' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            Company / Manager
-          </Link>
-          <Link
-            href="?role=worker"
-            className={`rounded-md px-3 py-1.5 font-medium transition ${
-              role === 'worker' ? 'bg-white text-slate-900 shadow' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            Worker
-          </Link>
-        </div>
-
-        <div className="flex items-center gap-2 text-sm">
-          {links.map((item) => {
-            const active = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={`${item.href}?role=${role}`}
-                className={`rounded-md px-3 py-1.5 font-medium transition ${
-                  active
-                    ? 'bg-blue-600 text-white'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                }`}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-        </div>
+          return (
+            <Link
+              key={item.href + item.label}
+              href={{ pathname: item.href, query: { role } }}
+              className={`rounded-md px-3 py-1.5 text-sm transition-colors ${
+                isActive
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'
+              }`}
+            >
+              {item.label}
+            </Link>
+          );
+        })}
       </div>
     </nav>
   );

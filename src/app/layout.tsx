@@ -1,5 +1,6 @@
+import { Suspense } from 'react';
 import './globals.css';
-import Navbar from '@/components/Navbar';
+import RoleAwareNavbar from '@/components/RoleAwareNavbar';
 
 export const metadata = {
   title: 'ReCon - Manpower Management',
@@ -9,9 +10,11 @@ export const metadata = {
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-screen text-slate-900">
-        <Navbar />
-        <main className="mx-auto w-full max-w-7xl px-4 py-8">{children}</main>
+      <body className="bg-gray-100 text-gray-900 min-h-screen">
+        <Suspense fallback={null}>
+          <RoleAwareNavbar />
+        </Suspense>
+        <main className="p-4">{children}</main>
       </body>
     </html>
   );
