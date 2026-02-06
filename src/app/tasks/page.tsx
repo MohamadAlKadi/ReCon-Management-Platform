@@ -1,51 +1,36 @@
-// src/app/tasks/page.tsx
-import  prisma  from '@/lib/prisma'
-import { Task } from '@prisma/client'
-import React from 'react'
+import TaskCard from '@/components/TaskCard'
+import prisma from '@/lib/prisma'
 
-// Optional: define a type for props if you fetch tasks in a separate component
-type TaskListProps = {
-  tasks: Task[]
-}
-
-// Component to render a list of tasks
-function TaskList({ tasks }: TaskListProps) {
-  return (
-    <div className="p-4 space-y-4">
-      {tasks.map((task: Task) => (
-        <div
-          key={task.id}
-          className="p-4 border rounded shadow hover:bg-gray-50 transition"
-        >
-          <h3 className="font-semibold">{task.title}</h3>
-          {task.description && <p>{task.description}</p>}
-          <p className="text-sm text-gray-500">
-            Assigned to: {task.assignedToId ?? 'Unassigned'}
-          </p>
-          <p className="text-sm text-gray-500">
-            Status: {task.status ?? 'Pending'}
-          </p>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-// Server component that fetches tasks from the database
 export default async function TasksPage() {
-  // Fetch tasks from Prisma
-  const tasks: Task[] = await prisma.task.findMany({
+  const tasks = await prisma.task.findMany({
     orderBy: { createdAt: 'desc' },
     include: {
-      // Include assigned user info if you want
-      assignedTo: true,
+      assignedTo: {
+        select: { name: true },
+      },
+      project: {
+        select: { name: true },
+      },
     },
   })
 
   return (
-    <main className="min-h-screen bg-gray-100">
-      <h1 className="text-2xl font-bold p-4">Tasks</h1>
-      <TaskList tasks={tasks} />
+    <main className="min-h-screen bg-gray-100 p-4">
+      <h1 className="mb-4 text-2xl font-bold">Tasks</h1>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        {tasks.map((task) => (
+          <TaskCard
+            key={task.id}
+            title={task.title}
+            description={task.description}
+            status={task.status}
+            assignee={task.assignedTo?.name}
+            dueDate={task.dueDate}
+            projectName={task.project.name}
+            tags={[task.status === 'COMPLETED' ? 'Done' : 'Open']}
+          />
+        ))}
+      </div>
     </main>
   )
 }
