@@ -1,0 +1,9 @@
+/* Tailwind 4 import (correct for this setup) */
+@import "tailwindcss";
+
+/* Global styles */
+body {
+  background-color: #f3f4f6; /* light gray background globally */
+  color: #111827;           /* dark text */
+  font-family: Arial, Helvetica, sans-serif;
+}
