@@ -30,29 +30,27 @@ export default async function Projects() {
   })
 
   return (
-    <div>
-      <h1 className="mb-4 text-2xl font-bold">Projects</h1>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        {projects.map((project) => {
-          const completedCount = project.tasks.filter(
-            (task) => task.status === 'COMPLETED',
-          ).length
-          const totalCount = project.tasks.length
-          const progress = totalCount ? (completedCount / totalCount) * 100 : undefined
-
-          return (
-            <Link key={project.id} href={`/projects/${project.id}`} className="block">
-              <ProjectCard
-                name={project.name}
-                companyName={project.company.name}
-                status={getProjectStatus(project.startDate, project.endDate)}
-                taskSummary={`${completedCount}/${totalCount || 0} completed`}
-                progress={progress}
-              />
-            </Link>
-          )
-        })}
+    <section className="page-stack">
+      <div className="section-header">
+        <div>
+          <p className="section-kicker">Portfolio</p>
+          <h1>Projects</h1>
+        </div>
+        <span className="pill-badge pill-badge--primary">{projects.length} active</span>
       </div>
-    </div>
-  )
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        {projects.map((project) => (
+          <Link
+            key={project.id}
+            href={`/projects/${project.id}`}
+            className="surface-card subtle-gradient block p-5 transition hover:-translate-y-0.5"
+          >
+            <h2 className="text-lg font-semibold">{project.name}</h2>
+            <p className="text-sm text-slate-600">{project.company.name}</p>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
 }

@@ -1,36 +1,51 @@
-import TaskCard from '@/components/TaskCard'
 import prisma from '@/lib/prisma'
+import { Task } from '@prisma/client'
+import React from 'react'
+
+type TaskListProps = {
+  tasks: Task[]
+}
+
+function TaskList({ tasks }: TaskListProps) {
+  return (
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      {tasks.map((task: Task) => (
+        <div
+          key={task.id}
+          className="surface-card p-5 transition hover:-translate-y-0.5"
+        >
+          <div className="section-header">
+            <h3 className="font-semibold">{task.title}</h3>
+            <span className="pill-badge pill-badge--warning">{task.status ?? 'Pending'}</span>
+          </div>
+          <div className="flow-base text-sm text-slate-600">
+            {task.description && <p>{task.description}</p>}
+            <p>Assigned to: {task.assignedToId ?? 'Unassigned'}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
 
 export default async function TasksPage() {
-  const tasks = await prisma.task.findMany({
+  const tasks: Task[] = await prisma.task.findMany({
     orderBy: { createdAt: 'desc' },
     include: {
-      assignedTo: {
-        select: { name: true },
-      },
-      project: {
-        select: { name: true },
-      },
+      assignedTo: true,
     },
   })
 
   return (
-    <main className="min-h-screen bg-gray-100 p-4">
-      <h1 className="mb-4 text-2xl font-bold">Tasks</h1>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        {tasks.map((task) => (
-          <TaskCard
-            key={task.id}
-            title={task.title}
-            description={task.description}
-            status={task.status}
-            assignee={task.assignedTo?.name}
-            dueDate={task.dueDate}
-            projectName={task.project.name}
-            tags={[task.status === 'COMPLETED' ? 'Done' : 'Open']}
-          />
-        ))}
+    <section className="page-stack">
+      <div className="section-header">
+        <div>
+          <p className="section-kicker">Execution</p>
+          <h1>Tasks</h1>
+        </div>
+        <span className="pill-badge pill-badge--primary">{tasks.length} total</span>
       </div>
-    </main>
+      <TaskList tasks={tasks} />
+    </section>
   )
 }

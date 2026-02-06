@@ -10,11 +10,9 @@ export const metadata = {
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="bg-gray-100 text-gray-900 min-h-screen">
-        <Suspense fallback={null}>
-          <RoleAwareNavbar />
-        </Suspense>
-        <main className="p-4">{children}</main>
+      <body className="min-h-screen">
+        <Navbar />
+        <main className="page-shell page-stack">{children}</main>
       </body>
     </html>
   );

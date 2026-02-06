@@ -10,20 +10,25 @@ export default async function AssetsPage() {
   })
 
   return (
-    <div>
-      <h1 className="mb-4 text-2xl font-bold">Assets</h1>
+    <section className="page-stack">
+      <div className="section-header">
+        <div>
+          <p className="section-kicker">Inventory</p>
+          <h1>Assets</h1>
+        </div>
+        <span className="pill-badge pill-badge--success">{assets.length} tracked</span>
+      </div>
+
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {assets.map((asset) => (
-          <AssetCard
-            key={asset.id}
-            name={asset.name}
-            type={asset.type}
-            assignee={asset.assignedTo?.name}
-            projectName={asset.project.name}
-            tags={[asset.type]}
-          />
+          <div key={asset.id} className="surface-card p-5 flow-tight">
+            <h2 className="font-bold">{asset.name}</h2>
+            <p className="text-sm text-slate-600">Type: {asset.type}</p>
+            <p className="text-sm text-slate-600">Project: {asset.project.name}</p>
+            <p className="text-sm text-slate-600">Assigned To: {asset.assignedTo?.name || 'Unassigned'}</p>
+          </div>
         ))}
       </div>
-    </div>
-  )
+    </section>
+  );
 }
