@@ -1,24 +1,30 @@
-import prisma from '@/lib/prisma';
 import Link from 'next/link';
+import ProjectCard from '@/components/ProjectCard';
 
-export default async function Projects() {
-  const projects = await prisma.project.findMany({
-    include: { company: true },
-    orderBy: { createdAt: 'desc' },
-  });
+const projects = [
+  {
+    id: 1,
+    name: 'Central Plaza Tower',
+    company: 'Summit Build Co.',
+    description: 'Mixed-use high-rise with phased handover and underground parking.',
+  },
+  {
+    id: 2,
+    name: 'Riverside Logistics Hub',
+    company: 'Northline Contractors',
+    description: 'Distribution facility with office fit-out and loading bays.',
+  },
+];
 
+export default function Projects() {
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">Projects</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="space-y-4">
+      <h1 className="page-title">Projects</h1>
+      <p className="page-subtitle">Browse active and upcoming construction projects across companies.</p>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {projects.map((project) => (
-          <Link
-            key={project.id}
-            href={`/projects/${project.id}`}
-            className="bg-white p-4 rounded shadow hover:bg-gray-50 block"
-          >
-            <h2 className="font-semibold">{project.name}</h2>
-            <p className="text-sm text-gray-600">{project.company.name}</p>
+          <Link key={project.id} href={`/projects/${project.id}`} className="block">
+            <ProjectCard name={project.name} companyName={project.company} description={project.description} />
           </Link>
         ))}
       </div>
