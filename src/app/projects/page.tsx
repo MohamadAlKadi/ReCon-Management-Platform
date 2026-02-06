@@ -1,26 +1,58 @@
-import Link from 'next/link';
-import { mockProjects, mockTasks } from '@/lib/mock-data';
-import { getAppRole, withRole } from '@/lib/ui-role';
+import ProjectCard from '@/components/ProjectCard'
+import prisma from '@/lib/prisma'
+import Link from 'next/link'
 
-type ProjectsPageProps = { searchParams: Promise<{ role?: string }> };
+const getProjectStatus = (startDate: Date, endDate: Date | null) => {
+  const now = new Date()
 
-export default async function Projects({ searchParams }: ProjectsPageProps) {
-  const { role: roleParam } = await searchParams;
-  const role = getAppRole(roleParam);
+  if (endDate && endDate < now) {
+    return 'COMPLETED'
+  }
+
+  if (startDate > now) {
+    return 'UPCOMING'
+  }
+
+  return 'ACTIVE'
+}
+
+export default async function Projects() {
+  const projects = await prisma.project.findMany({
+    include: {
+      company: true,
+      tasks: {
+        select: {
+          status: true,
+        },
+      },
+    },
+    orderBy: { createdAt: 'desc' },
+  })
 
   return (
     <div>
-      <h1 className="mb-1 text-3xl font-bold text-slate-900">Project Portfolio</h1>
-      <p className="mb-5 text-slate-600">Manager workspace for project configuration, monitoring, and execution details.</p>
+      <h1 className="mb-4 text-2xl font-bold">Projects</h1>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        {mockProjects.map((project) => (
-          <Link key={project.id} href={withRole(`/projects/${project.id}`, role)} className="block rounded-2xl border border-white/60 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-            <h2 className="text-lg font-semibold text-slate-900">{project.name}</h2>
-            <p className="mt-1 text-sm text-slate-500">{project.company}</p>
-            <p className="mt-4 text-sm text-slate-600">{mockTasks.filter((task) => task.projectId === project.id).length} tracked tasks</p>
-          </Link>
-        ))}
+        {projects.map((project) => {
+          const completedCount = project.tasks.filter(
+            (task) => task.status === 'COMPLETED',
+          ).length
+          const totalCount = project.tasks.length
+          const progress = totalCount ? (completedCount / totalCount) * 100 : undefined
+
+          return (
+            <Link key={project.id} href={`/projects/${project.id}`} className="block">
+              <ProjectCard
+                name={project.name}
+                companyName={project.company.name}
+                status={getProjectStatus(project.startDate, project.endDate)}
+                taskSummary={`${completedCount}/${totalCount || 0} completed`}
+                progress={progress}
+              />
+            </Link>
+          )
+        })}
       </div>
     </div>
-  );
+  )
 }
