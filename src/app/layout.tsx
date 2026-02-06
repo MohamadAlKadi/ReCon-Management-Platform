@@ -9,9 +9,9 @@ export const metadata = {
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="bg-gray-100 text-gray-900 min-h-screen">
+      <body className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100 text-slate-900">
         <Navbar />
-        <main className="p-4">{children}</main>
+        <main className="mx-auto w-full max-w-6xl px-4 py-6">{children}</main>
       </body>
     </html>
   );
