@@ -2,13 +2,14 @@ import prisma from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 
 type ProjectDetailPageProps = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 export default async function ProjectDetailPage({ params }: ProjectDetailPageProps) {
-  const projectId = Number(params.id);
+  const { id } = await params;
+  const projectId = Number(id);
 
   if (!Number.isInteger(projectId) || projectId <= 0) {
     notFound();
