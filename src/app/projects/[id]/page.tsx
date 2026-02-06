@@ -75,7 +75,6 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
           </div>
         )}
       </section>
-
       <section>
         <h2 className="mb-3 text-xl font-semibold">Assets</h2>
         {project.assets.length === 0 ? (
